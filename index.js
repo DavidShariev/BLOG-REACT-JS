@@ -28,6 +28,7 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+//регистрация
 app.post("/auth/register", registerValidator, async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -71,6 +72,52 @@ app.post("/auth/register", registerValidator, async (req, res) => {
     res.status(500).json({
       //500 - статус ошибки
       message: "Some registration error",
+    });
+  }
+});
+
+//авторизация
+app.post("/auth/login", async (req, res) => {
+  try {
+    const user = await UserModel.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "login error!",
+      });
+    }
+
+    const isValidPass = await bcrypt.compare(
+      req.body.password,
+      user._doc.passwordHash
+    );
+
+    if (!isValidPass) {
+      return res.status(400).json({
+        message: "login error!",
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        _id: user._id,
+      },
+      "secret123",
+      {
+        expiresIn: 30, //срок жизни токена
+      }
+    );
+
+    const { passwordHash, ...userData } = user._doc;
+
+    res.json({
+      ...userData,
+      token,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "login error!",
     });
   }
 });
