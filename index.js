@@ -1,20 +1,30 @@
 import express from "express";
-import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
-import { validationResult } from "express-validator";
 import { loginValidator, registerValidator } from "./validations/auth.js";
-import checkAuth from "./utils/checkAuth.js";
-
-import UserModel from "./models/User.js";
-import User from "./models/User.js";
-
-import * as UserControllers from "./controllers/UserController.js";
-import * as PostControllers from "./controllers/PostController.js";
 import { postCreateValidation } from "./validations/post.js";
+import multer from "multer"; //загрузка картинок
+
+import { UserControllers, PostControllers } from "./controllers/index.js";
+import { handleValidationErrors, checkAuth } from "./utils/index.js";
 
 const app = express();
 const port = 4444;
+
+//сохранение картинок
+const storage = multer.diskStorage({
+  destination: (_, __, cb) => {
+    cb(null, "uploads");
+  },
+  filename: (_, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+const upload = multer({ storage });
+app.post("/upload", checkAuth, upload.single("image"), (req, res) => {
+  res.json({
+    url: `uploads/${req.file.originalname}`,
+  });
+});
 
 //подключение к БД mongoDB
 mongoose
@@ -30,21 +40,40 @@ mongoose
 
 app.use(express.json()); //позволяет читать JSON
 
+//проверка наличия статичных файлов (для картинок)
+app.use("/uploads", express.static("uploads"));
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
 //регистрация
-app.post("/auth/register", registerValidator, UserControllers.register);
+app.post(
+  "/auth/register",
+  registerValidator,
+  handleValidationErrors,
+  UserControllers.register
+);
 
 //авторизация
-app.post("/auth/login", loginValidator, UserControllers.login);
+app.post(
+  "/auth/login",
+  loginValidator,
+  handleValidationErrors,
+  UserControllers.login
+);
 
 //получение данных авторнизации (2 парам. middleware проверка доступа)
 app.get("/auth/me", checkAuth, UserControllers.getMe);
 
 //создание статьи
-app.post("/post", checkAuth, postCreateValidation, PostControllers.create);
+app.post(
+  "/posts",
+  checkAuth,
+  postCreateValidation,
+  handleValidationErrors,
+  PostControllers.create
+);
 
 //получение всех статей
 app.post("/posts", PostControllers.getAll);
@@ -56,7 +85,12 @@ app.post("/posts/:id", PostControllers.getOne);
 app.delete("/posts/:id", checkAuth, PostControllers.remove);
 
 //обнов. поста
-app.patch("/posts/:id", checkAuth, PostControllers.update);
+app.patch(
+  "/posts/:id",
+  checkAuth,
+  postCreateValidation,
+  PostControllers.update
+);
 
 app.listen(port, (err) => {
   if (err) {

@@ -6,12 +6,6 @@ import User from "../models/User.js";
 
 export const register = async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      //ответ 400 - ошибка запроса
-      return res.status(400).json(errors.array());
-    }
-
     const password = req.body.password;
     const salt = await bcrypt.genSalt(10); //алгорить шифрования пароля
     const hash = await bcrypt.hash(password, salt);
