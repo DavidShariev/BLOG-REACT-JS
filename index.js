@@ -4,8 +4,10 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import { registerValidator } from "./validations/auth.js";
+import checkAuth from "./utils/checkAuth.js";
 
 import UserModel from "./models/User.js";
+import User from "./models/User.js";
 
 const app = express();
 const port = 4444;
@@ -113,6 +115,26 @@ app.post("/auth/login", async (req, res) => {
     res.json({
       ...userData,
       token,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "login error!",
+    });
+  }
+});
+
+//получение данных
+app.get("/auth/me", checkAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "No user",
+      });
+    }
+    res.json({
+      userData: user._doc,
     });
   } catch (err) {
     console.log(err);
