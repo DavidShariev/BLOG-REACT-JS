@@ -10,9 +10,8 @@ import { theme } from "./theme";
 import store from "./redux/store";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-
 root.render(
-  <React.StrictMode>
+  <>
     <CssBaseline />
     <ThemeProvider theme={theme}>
       <Provider store={store}>
@@ -21,5 +20,5 @@ root.render(
         </BrowserRouter>
       </Provider>
     </ThemeProvider>
-  </React.StrictMode>
+  </>
 );

@@ -1,4 +1,5 @@
 import PostModel from "../models/Post.js";
+import UserModel from "../models/User.js";
 
 export const create = async (req, res) => {
   try {
@@ -48,7 +49,7 @@ export const getOne = async (req, res) => {
       {
         returnDocument: "after", //вернуть обновленный эл.
       },
-      (err, doc) => {
+      async (err, doc) => {
         if (err) {
           console.log(err);
           return res.status(500).json({
@@ -62,6 +63,10 @@ export const getOne = async (req, res) => {
           });
         }
 
+        const user = await UserModel.findOne({
+          _id: doc.user._id,
+        });
+        doc.user = user;
         res.json(doc);
       }
     );
@@ -130,6 +135,24 @@ export const update = async (req, res) => {
     console.log(err);
     res.json({
       message: "Some update error!",
+    });
+  }
+};
+
+export const getLastTags = async (req, res) => {
+  try {
+    const posts = await PostModel.find().exec();
+
+    let tags = posts.map((post) => post.tags).flat();
+
+    tags = new Set(tags);
+    tags = Array.from(tags);
+
+    res.json(tags.slice(0, 5));
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Tags not found",
     });
   }
 };

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { loginValidator, registerValidator } from "./validations/auth.js";
 import { postCreateValidation } from "./validations/post.js";
 import multer from "multer"; //загрузка картинок
-
+import cors from "cors"; //обращение с других адрессов
 import { UserControllers, PostControllers } from "./controllers/index.js";
 import { handleValidationErrors, checkAuth } from "./utils/index.js";
 
@@ -39,9 +39,8 @@ mongoose
   });
 
 app.use(express.json()); //позволяет читать JSON
-
-//проверка наличия статичных файлов (для картинок)
-app.use("/uploads", express.static("uploads"));
+app.use(cors()); //разрешает запросы с других сайтов
+app.use("/uploads", express.static("uploads")); //проверка наличия статичных файлов (для картинок)
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -68,7 +67,7 @@ app.get("/auth/me", checkAuth, UserControllers.getMe);
 
 //создание статьи
 app.post(
-  "/posts",
+  "/posts/create",
   checkAuth,
   postCreateValidation,
   handleValidationErrors,
@@ -76,13 +75,16 @@ app.post(
 );
 
 //получение всех статей
-app.post("/posts", PostControllers.getAll);
+app.get("/posts", PostControllers.getAll);
 
 //получение одной статьи
 app.post("/posts/:id", PostControllers.getOne);
 
 //удаление поста
 app.delete("/posts/:id", checkAuth, PostControllers.remove);
+
+//получить последний 5 тегов
+app.get("/posts/tags", PostControllers.getLastTags);
 
 //обнов. поста
 app.patch(
