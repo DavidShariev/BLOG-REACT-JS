@@ -10,11 +10,10 @@ import { fetchPosts, fetchTags } from '../redux/slices/posts';
 
 export const Home = () => {
   const dispatch = useDispatch();
+  const userData = useSelector( state => state.auth.data);
   const { posts, tags } = useSelector(state => state.posts)
   const isPostsLoading = posts.status === "loading";
   const isTagsLoading = tags.status === "loading";
-  console.log(posts.status);
-  console.log(posts);
 
   useEffect(() => {
     dispatch(fetchPosts());
@@ -45,7 +44,8 @@ export const Home = () => {
                 createdAt={ post.createdAt }
                 commentsCount={post.commentsCount}
                 tags={post.tags}
-              />
+                isEditable={userData?._id === post.user._id}
+                />
           )}
         </Grid>
         <Grid xs={4} item>
