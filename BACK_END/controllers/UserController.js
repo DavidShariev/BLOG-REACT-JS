@@ -26,7 +26,7 @@ export const register = async (req, res) => {
       },
       "secret123",
       {
-        expiresIn: 30, //срок жизни токена
+        expiresIn: "30d", //срок жизни токена
       }
     );
 
@@ -37,7 +37,7 @@ export const register = async (req, res) => {
       token,
     });
   } catch (err) {
-    console.warn(err);
+    console.log(err);
     res.status(500).json({
       //500 - статус ошибки
       message: "Some registration error",
@@ -72,7 +72,7 @@ export const login = async (req, res) => {
       },
       "secret123",
       {
-        expiresIn: 30, //срок жизни токена
+        expiresIn: "30d", //срок жизни токена
       }
     );
 

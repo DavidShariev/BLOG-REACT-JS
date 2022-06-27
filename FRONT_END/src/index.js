@@ -9,6 +9,10 @@ import { ThemeProvider } from "@mui/material";
 import { theme } from "./theme";
 import store from "./redux/store";
 
+if (!process.env.REACT_APP_API_URL) {
+  process.env.REACT_APP_API_URL = "localhost:4444";
+}
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <>

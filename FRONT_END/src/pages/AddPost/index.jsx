@@ -21,19 +21,15 @@ export const AddPost = () => {
   const [tags, setTags] = React.useState('');
   const [imageUrl, setImageUrl] = React.useState('');
   const inputFileRef = React.useRef(null);
-
   const isEditing = Boolean(id);
 
   const handleChangeFile = async (event) => {
     try {
       const formData = new FormData();
       const file = event.target.files[0];
+      console.log(file);
       formData.append('image', file);
-      const { data } = await axios.post('/upload', formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      });
+      const { data } = await axios.post('/upload', formData);
       setImageUrl(data.url);
     } catch (err) {
       console.warn(err);
@@ -55,14 +51,14 @@ export const AddPost = () => {
 
       const fields = {
         title,
-        imageUrl,
-        tags,
+        imageUrl: process.env.REACT_APP_API_URL+imageUrl,
+        tags: tags.split(" "),
         text,
       };
-
+      console.log(fields);
       const { data } = isEditing
         ? await axios.patch(`/posts/${id}`, fields)
-        : await axios.post('/posts', fields);
+        : await axios.post('/posts/create', fields);
 
       const _id = isEditing ? id : data._id;
 
@@ -117,7 +113,7 @@ export const AddPost = () => {
       <input ref={inputFileRef} type="file" onChange={handleChangeFile} hidden />
       {imageUrl && (
         <>
-          <Button variant="contained" color="error" onClick={onClickRemoveImage}>
+          <Button variant="contained" color="error" style={{marginLeft: "20px"}} onClick={onClickRemoveImage}>
             Удалить
           </Button>
           <img

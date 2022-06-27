@@ -6,25 +6,10 @@ import multer from "multer"; //загрузка картинок
 import cors from "cors"; //обращение с других адрессов
 import { UserControllers, PostControllers } from "./controllers/index.js";
 import { handleValidationErrors, checkAuth } from "./utils/index.js";
+import fs from "fs";
 
 const app = express();
 const port = 4444;
-
-//сохранение картинок
-const storage = multer.diskStorage({
-  destination: (_, __, cb) => {
-    cb(null, "uploads");
-  },
-  filename: (_, file, cb) => {
-    cb(null, file.originalname);
-  },
-});
-const upload = multer({ storage });
-app.post("/upload", checkAuth, upload.single("image"), (req, res) => {
-  res.json({
-    url: `uploads/${req.file.originalname}`,
-  });
-});
 
 //подключение к БД mongoDB
 mongoose
@@ -38,12 +23,26 @@ mongoose
     console.log("DB error", err);
   });
 
+//сохранение картинок
+const storage = multer.diskStorage({
+  destination: (_, __, cb) => {
+    if (!fs.existsSync("uploads")) {
+      fs.mkdirSync("uploads");
+    }
+    cb(null, "uploads");
+  },
+  filename: (_, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage });
+
 app.use(express.json()); //позволяет читать JSON
 app.use(cors()); //разрешает запросы с других сайтов
 app.use("/uploads", express.static("uploads")); //проверка наличия статичных файлов (для картинок)
 
 app.post("/upload", checkAuth, upload.single("image"), (req, res) => {
-  console.log(req.file);
   res.json({
     url: `/uploads/${req.file.originalname}`,
   });
