@@ -42,6 +42,13 @@ app.use(express.json()); //позволяет читать JSON
 app.use(cors()); //разрешает запросы с других сайтов
 app.use("/uploads", express.static("uploads")); //проверка наличия статичных файлов (для картинок)
 
+app.post("/upload", checkAuth, upload.single("image"), (req, res) => {
+  console.log(req.file);
+  res.json({
+    url: `/uploads/${req.file.originalname}`,
+  });
+});
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
