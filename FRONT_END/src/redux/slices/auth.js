@@ -22,7 +22,7 @@ export const fetchRegister = createAsyncThunk(
 
 export const fetchAuthMe = createAsyncThunk("auth/fetchAuthMe", async () => {
   const { data } = await axios.get("/auth/me");
-  return data;
+  return data.userData;
 });
 
 export const selectIsAuth = (state) => Boolean(state.auth.data);

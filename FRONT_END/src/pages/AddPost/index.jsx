@@ -27,7 +27,6 @@ export const AddPost = () => {
     try {
       const formData = new FormData();
       const file = event.target.files[0];
-      console.log(file);
       formData.append('image', file);
       const { data } = await axios.post('/upload', formData);
       setImageUrl(data.url);
@@ -55,7 +54,6 @@ export const AddPost = () => {
         tags: tags.split(" "),
         text,
       };
-      console.log(fields);
       const { data } = isEditing
         ? await axios.patch(`/posts/${id}`, fields)
         : await axios.post('/posts/create', fields);
