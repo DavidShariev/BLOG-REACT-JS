@@ -5,7 +5,6 @@ import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import SimpleMDE from 'react-simplemde-editor';
-
 import 'easymde/dist/easymde.min.css';
 import { selectIsAuth } from '../../redux/slices/auth';
 import axios from '../../axios';
@@ -29,12 +28,13 @@ export const AddPost = () => {
       const file = event.target.files[0];
       formData.append('image', file);
       const { data } = await axios.post('/upload', formData);
-      setImageUrl(data.url);
+      setImageUrl(process.env.REACT_APP_API_URL+data.url);
     } catch (err) {
       console.warn(err);
       alert('Ошибка при загрузке файла!');
     }
   };
+
 
   const onClickRemoveImage = () => {
     setImageUrl('');
@@ -50,7 +50,7 @@ export const AddPost = () => {
 
       const fields = {
         title,
-        imageUrl: process.env.REACT_APP_API_URL+imageUrl,
+        imageUrl: imageUrl,
         tags: tags.split(" "),
         text,
       };
@@ -70,7 +70,7 @@ export const AddPost = () => {
   React.useEffect(() => {
     if (id) {
       axios
-        .get(`/posts/${id}`)
+        .post(`/posts/${id}`)
         .then(({ data }) => {
           setTitle(data.title);
           setText(data.text);
@@ -116,7 +116,7 @@ export const AddPost = () => {
           </Button>
           <img
             className={styles.image}
-            src={`${process.env.REACT_APP_API_URL}${imageUrl}`}
+            src={`${imageUrl}`}
             alt="Uploaded"
           />
         </>
