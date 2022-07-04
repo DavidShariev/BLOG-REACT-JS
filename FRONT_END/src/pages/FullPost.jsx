@@ -3,7 +3,7 @@ import React from "react";
 import { Post } from "../components/Post";
 import { Index } from "../components/AddComment";
 import { CommentsBlock } from "../components/CommentsBlock";
-
+import ReactMarkdown from "react-markdown";
 import { useParams } from "react-router-dom";
 import axios from "../axios";
 import { useEffect } from "react";
@@ -12,9 +12,14 @@ export const FullPost = () => {
   const params = useParams();
 
   const [data, setData] = React.useState();
+  const [comments, setComments] = React.useState([])
   const [isLoading, setIsLoading] = React.useState(true);
   
   useEffect(() => {
+    axios.get(`/comment/${params.id}`).then( res => {
+      setComments(res.data);
+      console.log(comments);
+    })
     axios.post(`/posts/${params.id}`).then( res => {
       setData(res.data);
       setIsLoading(false);
@@ -41,34 +46,17 @@ export const FullPost = () => {
         }}
         createdAt={data.createdAt}
         viewsCount={data.viewsCount}
-        commentsCount={3}
+        commentsCount={comments.length}
         tags={data.tags}
         isFullPost
       >
-        <p>
-         {data.text}
-        </p>
+        <ReactMarkdown children={data.text} />
       </Post>
       <CommentsBlock
-        items={[
-          {
-            user: {
-              fullName: "Вася Пупкин",
-              avatarUrl: "https://mui.com/static/images/avatar/1.jpg",
-            },
-            text: "Это тестовый комментарий 555555",
-          },
-          {
-            user: {
-              fullName: "Иван Иванов",
-              avatarUrl: "https://mui.com/static/images/avatar/2.jpg",
-            },
-            text: "When displaying three lines or more, the avatar is not aligned at the top. You should set the prop to align the avatar at the top",
-          },
-        ]}
-        isLoading={false}
+        items={comments}
+        isLoading={comments === []}
       >
-        <Index />
+        <Index comments={comments} setComments={setComments}/>
       </CommentsBlock>
     </>
   );

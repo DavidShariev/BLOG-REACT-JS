@@ -4,7 +4,11 @@ import { loginValidator, registerValidator } from "./validations/auth.js";
 import { postCreateValidation } from "./validations/post.js";
 import multer from "multer"; //загрузка картинок
 import cors from "cors"; //обращение с других адрессов
-import { UserControllers, PostControllers } from "./controllers/index.js";
+import {
+  UserControllers,
+  PostControllers,
+  CommentControllers,
+} from "./controllers/index.js";
 import { handleValidationErrors, checkAuth } from "./utils/index.js";
 import fs from "fs";
 
@@ -99,6 +103,10 @@ app.patch(
   postCreateValidation,
   PostControllers.update
 );
+
+app.post("/comment/add", checkAuth, CommentControllers.create);
+
+app.get("/comment/:id", CommentControllers.getComments);
 
 app.listen(port, (err) => {
   if (err) {

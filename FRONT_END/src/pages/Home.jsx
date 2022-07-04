@@ -20,6 +20,9 @@ export const Home = () => {
     dispatch(fetchTags());
   }, [])
 
+  if(!isPostsLoading){
+    console.log(posts.items[0])
+  }
 
   return (
     <>
@@ -37,6 +40,7 @@ export const Home = () => {
                 _id={post._id}
                 title={post.title}
                 imageUrl={post.imageUrl}
+                viewsCount={post.viewsCount}
                 user={{
                   avatarUrl: post.user.avatarUrl,
                   fullName: post.user.fullName
