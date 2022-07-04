@@ -72,6 +72,9 @@ app.post(
   UserControllers.login
 );
 
+//фильтрация по тегу
+app.get("/tags/:tag", PostControllers.tagFilterPosts);
+
 //получение данных авторнизации (2 парам. middleware проверка доступа)
 app.get("/auth/me", checkAuth, UserControllers.getMe);
 

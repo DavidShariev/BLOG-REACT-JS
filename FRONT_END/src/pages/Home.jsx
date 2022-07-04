@@ -7,8 +7,11 @@ import { Post } from '../components/Post';
 import { TagsBlock } from '../components/TagsBlock';
 import { CommentsBlock } from '../components/CommentsBlock';
 import { fetchPosts, fetchTags } from '../redux/slices/posts';
+import { useParams } from 'react-router-dom';
 
 export const Home = () => {
+  const params = useParams();
+  console.log(params)
   const dispatch = useDispatch();
   const userData = useSelector( state => state.auth.data);
   const { posts, tags } = useSelector(state => state.posts)
@@ -16,9 +19,9 @@ export const Home = () => {
   const isTagsLoading = tags.status === "loading";
 
   useEffect(() => {
-    dispatch(fetchPosts());
+    dispatch(fetchPosts(params.tag));
     dispatch(fetchTags());
-  }, [])
+  }, [params.tag])
 
   if(!isPostsLoading){
     console.log(posts.items[0])

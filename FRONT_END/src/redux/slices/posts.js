@@ -12,10 +12,17 @@ const initialState = {
   },
 };
 
-export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
-  const { data } = await axios.get("/posts");
-  return data;
-});
+export const fetchPosts = createAsyncThunk(
+  "posts/fetchPosts",
+  async (tag = null) => {
+    if (tag) {
+      const { data } = await axios.get(`/tags/${tag}`);
+      return data;
+    }
+    const { data } = await axios.get("/posts");
+    return data;
+  }
+);
 
 export const fetchTags = createAsyncThunk("posts/tags", async () => {
   const { data } = await axios.get("/posts/tags");

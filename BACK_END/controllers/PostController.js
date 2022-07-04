@@ -157,3 +157,19 @@ export const getLastTags = async (req, res) => {
     });
   }
 };
+
+export const tagFilterPosts = async (req, res) => {
+  try {
+    const tag = req.params.tag;
+
+    let posts = await PostModel.find().populate("user").exec();
+    posts = posts.filter((post) => post.tags.includes(tag));
+    console.log(posts);
+    res.json(posts);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Tag filter error!",
+    });
+  }
+};
