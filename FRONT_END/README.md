@@ -1,6 +1,6 @@
 # React BLOG
 
-[![Header](https://github.com/DavidShariev/BLOG-REACT-JS/blob/master/FRONT_END/Screenshot_3.png)](https://github.com/DavidShariev/)
+[![Header](https://github.com/DavidShariev/BLOG-REACT-JS/blob/master/FRONT_END/prev.png)](https://github.com/DavidShariev/)
 
 ## About project
 
